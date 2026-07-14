@@ -14,9 +14,15 @@
 
 import { test } from '../fixtures/baseTest';
 
-test('Uspesan login sa BasePage strukturom', async ({ loginPage }) => {
+test('Uspesan login sa kredencijalima iz env fajla', async ({ loginPage }) => {
   await loginPage.navigate();
-  await loginPage.login('zoki', 'Shevara23');
-  await loginPage.verifyLoggedIn();
+  
+  // Čitanje vrednosti iz .env fajla
+  const username = process.env.DB_USERNAME!;
+  const password = process.env.DB_PASSWORD!;
 
+  // Prosleđivanje promenljivih u POM metodu
+  await loginPage.login(username, password);
+  await loginPage.verifyLoggedIn();
 });
+
