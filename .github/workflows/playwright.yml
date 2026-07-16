@@ -1,40 +1,61 @@
 name: Playwright Tests
-
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
-  workflow_dispatch: # Omogućava ručno pokretanje iz GitHub interfejsa
+  workflow_dispatch: # <--- OMOGUĆAVA RUČNO POKRETANJE PREKO DUGMETA
+
+# Dajemo dozvolu GitHub-u da napravi i osveži veb-sajt za izveštaj
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout kod sa Git-a
+      uses: actions/checkout@v4
     
-    - uses: actions/setup-node@v4
+    - name: Podesi Node.js okruzenje
+      uses: actions/setup-node@v4
       with:
         node-version: lts/*
+        cache: 'npm'
         
-    - name: Install dependencies
+    - name: Instaliraj zavisnosti
       run: npm ci
       
-    - name: Install Playwright Browsers
+    - name: Pokreni ESLint proveru koda
+      run: npm run lint
+
+    - name: Instaliraj Playwright browsere
       run: npx playwright install --with-deps
 
-    - name: Run Playwright tests
-      # Ovde mapiramo GitHub Secrets u privremene .env promenljive tokom testa
+    - name: Pokreni sve Playwright testove
+      run: npx playwright test
       env:
         DB_USERNAME: ${{ secrets.DB_USERNAME }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      run: npx playwright test
 
-    - uses: actions/upload-artifact@v4
+    # 1. Pripremamo izveštaj za pretvaranje u sajt
+    - name: Podesi GitHub Pages okruzenje
+      uses: actions/configure-pages@v4
+      if: ${{ !cancelled() }}
+
+    # 2. Pakujemo Playwright report folder
+    - name: Spakuj Playwright izvestaj
+      uses: actions/upload-pages-artifact@v3
       if: ${{ !cancelled() }}
       with:
-        name: playwright-report
         path: playwright-report/
-        retention-days: 30
+
+    # 3. Kreiramo živi link i ispisujemo ga u konzoli
+    - name: Objavi izvestaj na GitHub Pages (Zivi Link)
+      id: deployment
+      uses: actions/deploy-pages@v4
+      if: ${{ !cancelled() }}

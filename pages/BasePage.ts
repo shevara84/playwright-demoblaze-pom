@@ -14,4 +14,8 @@ export class BasePage {
   async verifyPageTitle(title: string) {
     await expect(this.page).toHaveTitle(title);
   }
+
+  async reloadPage() {
+    await this.page.reload();
+  }
 }
