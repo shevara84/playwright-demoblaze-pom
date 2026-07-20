@@ -32,10 +32,13 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
-    // baseURL: 'http://localhost:3000',
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    baseURL: 'https://demoblaze.com',
+      /* Takes a screenshot only when a test fails */
+    screenshot: 'only-on-failure',
+    /* Records video only when a test fails */
+    video: 'retain-on-failure',
+    /* Generates a full Trace file only when a test fails (EXCELLENT for debugging) */
+    trace: 'retain-on-failure',
     headless: true,
   },
 
