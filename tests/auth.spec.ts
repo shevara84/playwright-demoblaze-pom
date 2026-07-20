@@ -1,13 +1,13 @@
 import { test } from '../fixtures/baseTest';
-import { invalidLoginData } from '../data/testData'; // Uvoz čistih podataka
+import { invalidLoginData } from '../data/testData'; 
 
-test('Uspesan login sa kredencijalima iz env fajla', async ({ loginPage }) => {
+test('Successful login with env credentials.', async ({ loginPage }) => {
   
-  await test.step('1. Korak: Navigacija na sajt', async () => {
+  await test.step('1. Step: Navigate to the site', async () => {
     await loginPage.navigate();
   });
 
-  await test.step('2. Korak: Login korisnika i stabilan logout', async () => {
+  await test.step('2. Step: User login and logout', async () => {
     const username = process.env.DB_USERNAME!;
     const password = process.env.DB_PASSWORD!;
 
@@ -17,14 +17,14 @@ test('Uspesan login sa kredencijalima iz env fajla', async ({ loginPage }) => {
   
 });
 
-test('Neuspesan login sa pogresnim kredencijalima', async ({ loginPage }) => {
+test('Unsuccessful login with invalid credentials', async ({ loginPage }) => {
 
-  await test.step('1. Korak: Navigacija na sajt', async () => {
+  await test.step('1. Step: Navigate to the site', async () => {
     await loginPage.navigate();
   });
 
-  await test.step('2. Korak: Pokusaj logina sa nevalidnim podacima', async () => {
-    // Svi stringovi su sklonjeni, vučemo ih iz testData fajla
+  await test.step('Login attempt with invalid credentials', async () => {
+  
     await loginPage.loginWithInvalidCredentials(
       invalidLoginData.username,
       invalidLoginData.password,
