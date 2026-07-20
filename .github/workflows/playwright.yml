@@ -4,9 +4,9 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
-  workflow_dispatch: # <--- OMOGUĆAVA RUČNO POKRETANJE PREKO DUGMETA
+  workflow_dispatch: 
 
-# Dajemo dozvolu GitHub-u da napravi i osveži veb-sajt za izveštaj
+# Allow GitHub to create and update the website for the report
 permissions:
   contents: read
   pages: write
@@ -21,41 +21,41 @@ jobs:
     - name: Checkout kod sa Git-a
       uses: actions/checkout@v4
     
-    - name: Podesi Node.js okruzenje
+    - name: Set Node.js environment
       uses: actions/setup-node@v4
       with:
         node-version: lts/*
         cache: 'npm'
         
-    - name: Instaliraj zavisnosti
+    - name: Install dependencies
       run: npm ci
       
-    - name: Pokreni ESLint proveru koda
+    - name: Run ESLint check
       run: npm run lint
 
-    - name: Instaliraj Playwright browsere
+    - name: Install Playwright browsers
       run: npx playwright install --with-deps
 
-    - name: Pokreni sve Playwright testove
+    - name: Run all Playwright tests
       run: npx playwright test
       env:
         DB_USERNAME: ${{ secrets.DB_USERNAME }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
-    # 1. Pripremamo izveštaj za pretvaranje u sajt
-    - name: Podesi GitHub Pages okruzenje
+    # 1. Prepare report for GitHub Pages
+    - name: Set up GitHub Pages environment
       uses: actions/configure-pages@v4
       if: ${{ !cancelled() }}
 
-    # 2. Pakujemo Playwright report folder
-    - name: Spakuj Playwright izvestaj
+    # 2. Zip Playwright report folder
+    - name: Zip Playwright report folder
       uses: actions/upload-pages-artifact@v3
       if: ${{ !cancelled() }}
       with:
         path: playwright-report/
 
-    # 3. Kreiramo živi link i ispisujemo ga u konzoli
-    - name: Objavi izvestaj na GitHub Pages (Zivi Link)
+    # 3. Kreate link and print it in console
+    - name: Publish report to GitHub Pages (Live Link)
       id: deployment
       uses: actions/deploy-pages@v4
       if: ${{ !cancelled() }}
